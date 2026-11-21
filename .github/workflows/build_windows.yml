@@ -31,11 +31,6 @@ jobs:
     strategy:
       matrix:
         include:
-          # - arch: x86_64-windows-gnu
-          #   os: windows-latest
-          #   target: x86_64-pc-windows-gnu
-          #   msystem: mingw64
-          #   env: x86_64
           - arch: ucrt64-x86_64-windows-gnu
             os: windows-latest
             target: x86_64-pc-windows-gnu
@@ -83,7 +78,7 @@ jobs:
         shell: msys2 {0}
         run: |
           mkdir artifact && cd artifact
-          mkdir tsukimi-x86_64-windows-gnu/ && cd tsukimi-x86_64-windows-gnu/ && mkdir bin/ && mkdir share/ && mkdir lib/
+          mkdir tsukimi-${{ matrix.arch }} && cd tsukimi-${{ matrix.arch }} && mkdir bin/ && mkdir share/ && mkdir lib/
           cp $GITHUB_WORKSPACE/target/release/tsukimi.exe bin/
           cp /${{ matrix.msystem }}/bin/gdbus.exe bin/
 
@@ -118,7 +113,7 @@ jobs:
             libgstvoamrwbenc.dll libgstwavenc.dll libgstx264.dll libgstx265.dll \
             libgstxingmux.dll libgsty4menc.dll libgstzbar.dll
 
-          cd $GITHUB_WORKSPACE/artifact/tsukimi-x86_64-windows-gnu
+          cd $GITHUB_WORKSPACE/artifact/tsukimi-${{ matrix.arch }}
           ldd bin/tsukimi.exe | grep '\/${{ matrix.msystem }}.*\.dll' -o | xargs -I{} cp -n "{}" bin/
           find lib/ -type f -name "*.dll" -exec ldd "{}" \; | grep '\/${{ matrix.msystem }}.*\.dll' -o | xargs -I{} cp -n "{}" bin/
 
@@ -134,7 +129,7 @@ jobs:
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         shell: powershell
         run: |
-          cd artifact/tsukimi-x86_64-windows-gnu
+          cd artifact/tsukimi-${{ matrix.arch }}
           7z.exe a ../tsukimi-${{matrix.arch}}.7z ./*
 
       - name: Calculate Checksum
