@@ -127,7 +127,8 @@ jobs:
         shell: powershell
         run: |
           cp ./installer/* artifact
-          makensis /V4 artifact/tsukimi_installer.nsi
+          & "${env:ProgramFiles(x86)}\NSIS\makensis.exe" /V4 artifact/tsukimi_installer.nsi
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           rm artifact/tsukimi_installer.nsi
 
       - name: Build Thin Package
