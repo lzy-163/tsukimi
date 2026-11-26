@@ -8,9 +8,16 @@ env:
 jobs:
   clippy_check:
     runs-on: ubuntu-latest
+    container: ubuntu:25.10
     steps:
       - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y libgtk-4-dev build-essential pkg-config curl ca-certificates
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
       - name: Run Clippy
         run: |
-            sudo apt install libgtk-4-dev build-essential
-            cargo clippy --all-targets --all-features
+          cargo clippy --all-targets --all-features
